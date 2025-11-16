@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+databases
+python-multipart
+requests
+pandas
+datasets
