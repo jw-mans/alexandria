@@ -1,13 +1,16 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app import repository, schemas, models
-from app.database import get_db
+from . import repository, schemas, models
+from .database import get_db
 
 router = APIRouter()
 
 
 @router.post("/runs", response_model=schemas.RunSchema)
 def create_run(run: schemas.RunSchema, db: Session = Depends(get_db)):
+    print(f"BACKEND: Received run {run.id}")
+    print(f"   Parameters: {run.parameters}")
+    print(f"   Metrics: {run.metrics}")
     db_run = repository.get_run(db, run.id)
     if db_run:
         raise HTTPException(status_code=400, detail="Run already exists")

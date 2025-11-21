@@ -8,14 +8,14 @@ def create_run(experiment_name, parameters=None, metrics=None, dataset=None,
     run_data = {
         "id": run_id,
         "experiment_name": experiment_name,
-        "timestamp_start": datetime.utcnow().isoformat() + "Z",
+        "timestamp_start": datetime.now(),
         "timestamp_end": None,
-        "parameters": parameters or [],
-        "metrics": metrics or [],
+        "parameters": parameters or {},
+        "metrics": metrics or {},
         "dataset": dataset,
         "code": code,
         "environment": get_environment(),
-        "artifacts": artifacts or [],
+        "artifacts": artifacts or {},
         "tags": tags or []
     }
     return run_data

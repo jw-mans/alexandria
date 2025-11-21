@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app import models, schemas
+from . import models, schemas
 import json
 
 def create_run(db: Session, run: schemas.RunSchema):
@@ -10,10 +10,69 @@ def create_run(db: Session, run: schemas.RunSchema):
         timestamp_end=run.timestamp_end,
         tags=run.tags,
     )
+
     db.add(db_run)
+    db.flush()  # чтобы db_run.id стало доступно
+
+    # ----- PARAMETERS -----
+    for p in run.parameters:
+        db.add(models.Parameter(
+            run_id=db_run.id,
+            key=p.key,
+            value=p.value
+        ))
+
+    # ----- METRICS -----
+    for m in run.metrics:
+        db.add(models.Metric(
+            run_id=db_run.id,
+            key=m.key,
+            value=m.value,
+            step=m.step
+        ))
+
+    # ----- ARTIFACTS -----
+    for a in run.artifacts:
+        db.add(models.Artifact(
+            run_id=db_run.id,
+            name=a.name,
+            type=a.type,
+            path=a.path
+        ))
+
+    # ----- DATASET -----
+    if run.dataset:
+        db.add(models.Dataset(
+            run_id=db_run.id,
+            name=run.dataset.name,
+            path=run.dataset.path,
+            num_rows=run.dataset.num_rows,
+            num_columns=run.dataset.num_columns,
+            schema=run.dataset.schema,
+            hash=run.dataset.hash
+        ))
+
+    # ----- CODE -----
+    if run.code:
+        db.add(models.Code(
+            run_id=db_run.id,
+            git_commit=run.code.git_commit,
+            entrypoint=run.code.entrypoint,
+            tracked_files=run.code.tracked_files
+        ))
+
+    # ----- ENVIRONMENT -----
+    if run.environment:
+        db.add(models.Environment(
+            run_id=db_run.id,
+            python_version=run.environment.python_version,
+            pip_freeze=run.environment.pip_freeze,
+            os=run.environment.os
+        ))
+
     db.commit()
     db.refresh(db_run)
-    return run
+    return db_run
 
 def get_run(db: Session, run_id: str):
     return db.query(models.Run).filter(models.Run.id == run_id).first()
@@ -24,7 +83,6 @@ def list_runs(db: Session, skip: int = 0, limit: int = 100):
 def diff_runs(run1: models.Run, run2: models.Run):
     diff = {}
 
-    # Параметры
     params1 = {p.key: p.value for p in run1.parameters}
     params2 = {p.key: p.value for p in run2.parameters}
     changed_params = {k: {"old": params1.get(k), "new": params2.get(k)}
@@ -32,7 +90,6 @@ def diff_runs(run1: models.Run, run2: models.Run):
                       if params1.get(k) != params2.get(k)}
     diff["parameters_changed"] = changed_params
 
-    # Метрики
     metrics1 = {m.key: m.value for m in run1.metrics}
     metrics2 = {m.key: m.value for m in run2.metrics}
     metrics_diff = {k: {"old": metrics1.get(k), "new": metrics2.get(k)}
@@ -40,10 +97,8 @@ def diff_runs(run1: models.Run, run2: models.Run):
                     if metrics1.get(k) != metrics2.get(k)}
     diff["metrics_changed"] = metrics_diff
 
-    # Датасет
     diff["dataset_changed"] = run1.dataset.hash != run2.dataset.hash if run1.dataset and run2.dataset else False
 
-    # Код
     code_diff = []
     if run1.code and run2.code:
         files1 = {f['path'] for f in run1.code.tracked_files}

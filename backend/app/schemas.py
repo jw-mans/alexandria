@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 from datetime import datetime
 
@@ -37,12 +37,15 @@ class ArtifactSchema(BaseModel):
 class RunSchema(BaseModel):
     id: str
     experiment_name: str
-    timestamp_start: Optional[datetime]
-    timestamp_end: Optional[datetime]
-    tags: Optional[List[str]] = []
-    parameters: Optional[List[ParameterSchema]] = []
-    metrics: Optional[List[MetricSchema]] = []
+    timestamp_start: Optional[datetime] = None
+    timestamp_end: Optional[datetime] = None
+    tags: Optional[List[str]] = Field(default_factory=list)
+    parameters: Optional[List[ParameterSchema]] = Field(default_factory=list)
+    metrics: Optional[List[MetricSchema]] = Field(default_factory=list)
     dataset: Optional[DatasetSchema]
     code: Optional[CodeSchema]
     environment: Optional[EnvironmentSchema]
-    artifacts: Optional[List[ArtifactSchema]] = []
+    artifacts: Optional[List[ArtifactSchema]] = Field(default_factory=list)
+
+    class Config:
+        from_attributes=True

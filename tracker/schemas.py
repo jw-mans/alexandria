@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 from datetime import datetime
 
@@ -16,7 +16,7 @@ class DatasetSchema(BaseModel):
     path: str
     num_rows: int
     num_columns: int
-    schema: Dict
+    table_schema: Dict
     hash: str
 
 class CodeSchema(BaseModel):
@@ -39,10 +39,10 @@ class RunSchema(BaseModel):
     experiment_name: str
     timestamp_start: Optional[datetime] = None
     timestamp_end: Optional[datetime] = None
-    tags: Optional[List[str]] = []
-    parameters: Optional[List[ParameterSchema]] = []
-    metrics: Optional[List[MetricSchema]] = []
+    tags: Optional[List[str]] = Field(default_factory=list)
+    parameters: Optional[List[ParameterSchema]] = Field(default_factory=list)
+    metrics: Optional[List[MetricSchema]] = Field(default_factory=list)
     dataset: Optional[DatasetSchema] = None
     code: Optional[CodeSchema] = None
     environment: Optional[EnvironmentSchema] = None
-    artifacts: Optional[List[ArtifactSchema]] = [] 
+    artifacts: Optional[List[ArtifactSchema]] = Field(default_factory=list)

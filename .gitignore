@@ -206,10 +206,19 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# custom
-structure.md
-planning.md
+# database
+*.db
+*.sqlite
+*.sqlite3
+database/
+backend/database/
 
-# tests and examples
-/tests/
-/examples/
+# ML artifacts
+runs/
+models/
+artifacts/
+checkpoints/
+
+# Structure
+planning.md
+structure.md

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.controllers import router as run_router
+from .controllers import router as run_router
 
 app = FastAPI(title="Alexandria")
 
