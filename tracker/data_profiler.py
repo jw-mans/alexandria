@@ -42,6 +42,8 @@ def profile_dataset_auto(data: Union[str, pd.DataFrame, Dataset]) -> Dict:
         "path": path,
         "num_rows": len(df),
         "num_columns": len(df.columns),
-        "schema": {col: str(dtype) for col, dtype in zip(df.columns, df.dtypes)},
+        "schema": {
+            col: str(dtype) for col, dtype in zip(df.columns, df.dtypes)
+        },
         "hash": hash_value
     }

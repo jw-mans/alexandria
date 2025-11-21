@@ -12,7 +12,7 @@ def create_run(db: Session, run: schemas.RunSchema):
     )
 
     db.add(db_run)
-    db.flush()  # чтобы db_run.id стало доступно
+    db.flush()
 
     # ----- PARAMETERS -----
     for p in run.parameters:
@@ -48,7 +48,7 @@ def create_run(db: Session, run: schemas.RunSchema):
             path=run.dataset.path,
             num_rows=run.dataset.num_rows,
             num_columns=run.dataset.num_columns,
-            schema=run.dataset.schema,
+            table_schema=run.dataset.table_schema,
             hash=run.dataset.hash
         ))
 

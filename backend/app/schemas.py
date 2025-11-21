@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 from datetime import datetime
+import re
 
 class ParameterSchema(BaseModel):
     key: str
@@ -16,7 +17,7 @@ class DatasetSchema(BaseModel):
     path: str
     num_rows: int
     num_columns: int
-    schema: Dict
+    table_schema: Dict
     hash: str
 
 class CodeSchema(BaseModel):
@@ -35,16 +36,16 @@ class ArtifactSchema(BaseModel):
     path: str
 
 class RunSchema(BaseModel):
-    id: str
-    experiment_name: str
+    id: str = Field(..., min_length=1, max_length=64, pattern=r'^[a-zA-Z0-9_-]+$')
+    experiment_name: str = Field(..., min_length=1, max_length=255)
     timestamp_start: Optional[datetime] = None
     timestamp_end: Optional[datetime] = None
     tags: Optional[List[str]] = Field(default_factory=list)
     parameters: Optional[List[ParameterSchema]] = Field(default_factory=list)
     metrics: Optional[List[MetricSchema]] = Field(default_factory=list)
-    dataset: Optional[DatasetSchema]
-    code: Optional[CodeSchema]
-    environment: Optional[EnvironmentSchema]
+    dataset: Optional[DatasetSchema] = None
+    code: Optional[CodeSchema] = None
+    environment: Optional[EnvironmentSchema] = None
     artifacts: Optional[List[ArtifactSchema]] = Field(default_factory=list)
 
     class Config:

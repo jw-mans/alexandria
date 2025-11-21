@@ -218,6 +218,8 @@ runs/
 models/
 artifacts/
 checkpoints/
+imitations/
+examples/
 
 # Structure
 planning.md

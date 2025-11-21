@@ -55,4 +55,8 @@ def track(experiment_name, artifacts_dir="runs/run_auto"):
 def log_metric(run_data, key: str, value: float, step: int = 0):
     if "metrics" not in run_data or run_data["metrics"] is None:
         run_data["metrics"] = []
-    run_data["metrics"].append({"key": key, "value": value, "step": step})
+    run_data["metrics"].append({
+        "key": key, 
+        "value": value, 
+        "step": step}
+    )

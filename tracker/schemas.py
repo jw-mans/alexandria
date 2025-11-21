@@ -35,8 +35,8 @@ class ArtifactSchema(BaseModel):
     path: str
 
 class RunSchema(BaseModel):
-    id: str
-    experiment_name: str
+    id: str = Field(..., min_length=1, max_length=64, pattern=r'^[a-zA-Z0-9_-]+$')
+    experiment_name: str = Field(..., min_length=1, max_length=255)
     timestamp_start: Optional[datetime] = None
     timestamp_end: Optional[datetime] = None
     tags: Optional[List[str]] = Field(default_factory=list)
@@ -46,3 +46,6 @@ class RunSchema(BaseModel):
     code: Optional[CodeSchema] = None
     environment: Optional[EnvironmentSchema] = None
     artifacts: Optional[List[ArtifactSchema]] = Field(default_factory=list)
+
+    class Config:
+        from_attributes = True

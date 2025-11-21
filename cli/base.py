@@ -5,11 +5,7 @@ import typer
 import httpx
 from rich.console import Console
 
-
 console = Console()
-
-
-
 
 class BaseCLIApp:
     """
