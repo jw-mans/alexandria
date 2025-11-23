@@ -5,6 +5,7 @@ from .code_profiler import get_git_commit, get_tracked_files, get_all_python_fil
 from .model_saver import save_artifact
 import os
 import pandas as pd
+import datetime
 
 try:
     from datasets import Dataset as HFDataset
@@ -22,16 +23,34 @@ def track(experiment_name, artifacts_dir="runs/run_auto"):
             kwargs["run_data"] = run_data
 
             result = func(*args, **kwargs) # train func run
+            run_data['timestamp_end'] = datetime.now()
+
+            total_args = list(args) + list(kwargs.values())
 
             # dataset autodetection
-            for v in kwargs.values():
-                if isinstance(v, pd.DataFrame) or (HFDataset and isinstance(v, HFDataset)):
+            for v in total_args:
+
+                def __mkcol():
                     from .data_profiler import profile_dataset_auto
                     run_data["dataset"] = profile_dataset_auto(v)
-                    break  # select first-founded dataset
 
-            # code and git building
-            python_files = get_all_python_files(".")
+                # CSV file (path provided as string)
+                if isinstance(v, str) and v.endswith(".csv") and os.path.exists(v):
+                    __mkcol()
+                    break
+
+                # pandas DataFrame
+                if isinstance(v, pd.DataFrame):
+                    __mkcol()
+                    break
+
+                # HF Dataset
+                if HFDataset and isinstance(v, HFDataset):
+                    __mkcol()
+                    break
+
+            root_dir = os.path.dirname(os.path.abspath(func.__code__.co_filename)) # collecting only source files
+            python_files = get_all_python_files(root_dir)
             run_data["code"] = {
                 "git_commit": get_git_commit(),
                 "entrypoint": func.__code__.co_filename,
@@ -56,7 +75,8 @@ def log_metric(run_data, key: str, value: float, step: int = 0):
     if "metrics" not in run_data or run_data["metrics"] is None:
         run_data["metrics"] = []
     run_data["metrics"].append({
-        "key": key, 
-        "value": value, 
-        "step": step}
+            "key": key, 
+            "value": value, 
+            "step": step
+        }
     )

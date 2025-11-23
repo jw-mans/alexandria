@@ -14,7 +14,7 @@ class DatasetsApp(BaseCLIApp):
         @self.app.command("list")
         def list_datasets(limit: Optional[int] = typer.Option(50, "--limit", help="Max datasets to fetch")):
             """List datasets known to the backend."""
-            data = self.http_get(f"/runs/datasets?limit={limit}")
+            data = self.http_get(f"/datasets?limit={limit}")
             if not data:
                 console.print("[yellow]No datasets found[/yellow]")
                 return

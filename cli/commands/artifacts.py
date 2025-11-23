@@ -30,7 +30,6 @@ class ArtifactsApp(BaseCLIApp):
                     str(a.get("name", "")),
                     str(a.get("type", "")),
                     str(a.get("path", "")),
-                    str(a.get("hash", "")),
                 )
 
             console.print(table)
