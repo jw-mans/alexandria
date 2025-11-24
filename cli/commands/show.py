@@ -5,7 +5,6 @@ from rich.table import Table
 from rich.pretty import Pretty
 import typer
 
-
 class ShowApp(BaseCLIApp):
     def __init__(self):
         super().__init__(name="show", help="Show run information")
@@ -44,7 +43,6 @@ class ShowApp(BaseCLIApp):
                 table.add_row(k, str(v))
 
             console.print(table)
-
 
 def get_app() -> BaseCLIApp:
     return ShowApp()

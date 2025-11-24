@@ -6,18 +6,22 @@ Base = declarative_base()
 
 class Run(Base):
     __tablename__ = "runs"
+
     id = Column(String, primary_key=True)
     experiment_name = Column(String)
     timestamp_start = Column(DateTime, default=datetime.datetime.now)
     timestamp_end = Column(DateTime)
     tags = Column(JSON)
 
+    # 1-to-many
     parameters = relationship("Parameter", back_populates="run", cascade="all, delete-orphan")
     metrics = relationship("Metric", back_populates="run", cascade="all, delete-orphan")
-    dataset = relationship("Dataset", uselist=False, back_populates="run", cascade="all, delete-orphan")
-    code = relationship("Code", uselist=False, back_populates="run", cascade="all, delete-orphan")
-    environment = relationship("Environment", uselist=False, back_populates="run", cascade="all, delete-orphan")
     artifacts = relationship("Artifact", back_populates="run", cascade="all, delete-orphan")
+
+    # 1-to-1
+    dataset = relationship("Dataset", back_populates="run", uselist=False, cascade="all, delete-orphan")
+    code = relationship("Code", back_populates="run", uselist=False, cascade="all, delete-orphan")
+    environment = relationship("Environment", back_populates="run", uselist=False, cascade="all, delete-orphan")
 
 
 class Parameter(Base):

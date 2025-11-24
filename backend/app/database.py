@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from .models import Base
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # из app/ -> backend/
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_DIR = os.path.join(BASE_DIR, "database")
 os.makedirs(DB_DIR, exist_ok=True)
 
@@ -20,5 +20,4 @@ def get_db():
     finally:
         db.close()
 
-# All tables creating
 Base.metadata.create_all(bind=engine)

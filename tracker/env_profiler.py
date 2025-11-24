@@ -5,7 +5,10 @@ import subprocess
 def get_environment():
     python_version = sys.version.split()[0]
     os_name = platform.system()
-    pip_freeze = subprocess.getoutput("pip freeze").splitlines()
+    try:
+        pip_freeze = subprocess.getoutput("pip freeze").splitlines()
+    except Exception:
+        pip_freeze = []
     return {
         "python_version": python_version,
         "os": os_name,

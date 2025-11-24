@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 class ParameterSchema(BaseModel):
@@ -40,12 +40,13 @@ class RunSchema(BaseModel):
     timestamp_start: Optional[datetime] = None
     timestamp_end: Optional[datetime] = None
     tags: Optional[List[str]] = Field(default_factory=list)
-    parameters: Optional[List[ParameterSchema]] = Field(default_factory=list)
-    metrics: Optional[List[MetricSchema]] = Field(default_factory=list)
-    dataset: Optional[DatasetSchema] = None
-    code: Optional[CodeSchema] = None
-    environment: Optional[EnvironmentSchema] = None
-    artifacts: Optional[List[ArtifactSchema]] = Field(default_factory=list)
+    parameters: Optional[Dict[str, str]] = Field(default_factory=dict)
+    metrics: Optional[Dict[str, List[float]]] = Field(default_factory=dict)
+    dataset: Optional[Dict[str, Any]] = None
+    code: Optional[Dict[str, Any]] = None
+    environment: Optional[Dict[str, Any]] = None
+    artifacts: Optional[Dict[str, Dict[str, Any]]] = Field(default_factory=dict)
 
-    class Config:
-        from_attributes = True
+    # Do we need this ORM config?
+    # class Config:
+    #     from_attributes = True

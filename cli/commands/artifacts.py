@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import List
-from ..base import BaseCLIApp, console
 from rich.table import Table
 
+from ..base import BaseCLIApp, console
 
 class ArtifactsApp(BaseCLIApp):
     def __init__(self):
@@ -14,7 +14,7 @@ class ArtifactsApp(BaseCLIApp):
         def list_artifacts(run_id: str):
             """List artifacts for a run"""
             data = self.http_get(f"/runs/{run_id}")
-            arts = data.get("artifacts", [])
+            arts = data.get("artifacts", {})
             if not arts:
                 console.print("[yellow]No artifacts found for this run[/yellow]")
                 return
@@ -25,15 +25,15 @@ class ArtifactsApp(BaseCLIApp):
             table.add_column("Path")
             table.add_column("Hash")
 
-            for a in arts:
+            for name, meta in arts.items():
                 table.add_row(
-                    str(a.get("name", "")),
-                    str(a.get("type", "")),
-                    str(a.get("path", "")),
+                    str(name),
+                    str(meta.get("type", "")),
+                    str(meta.get("path", "")),
+                    str(meta.get("hash", "")),
                 )
 
             console.print(table)
-
 
 def get_app() -> BaseCLIApp:
     return ArtifactsApp()

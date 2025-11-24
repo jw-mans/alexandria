@@ -4,7 +4,6 @@ from ..base import BaseCLIApp, console
 from rich.table import Table
 import typer
 
-
 class DiffApp(BaseCLIApp):
     def __init__(self):
         super().__init__(name="diff", help="Show differences between runs")
@@ -18,6 +17,7 @@ class DiffApp(BaseCLIApp):
                 console.print(data)
                 return
 
+            # Pretty print sections
             for section, content in data.items():
                 console.rule(f"[bold]{section}[/bold]")
                 if isinstance(content, dict) and content:
@@ -26,8 +26,12 @@ class DiffApp(BaseCLIApp):
                     table.add_column("Old", overflow="fold")
                     table.add_column("New", overflow="fold")
                     for k, v in content.items():
-                        old = v.get("old") if isinstance(v, dict) else str(v)
-                        new = v.get("new") if isinstance(v, dict) else ""
+                        if isinstance(v, dict) and "old" in v and "new" in v:
+                            old = v.get("old")
+                            new = v.get("new")
+                        else:
+                            old = v
+                            new = ""
                         table.add_row(str(k), str(old), str(new))
                     console.print(table)
                 elif isinstance(content, list) and content:
@@ -35,7 +39,6 @@ class DiffApp(BaseCLIApp):
                         console.print(f"- {item}")
                 else:
                     console.print(str(content))
-
 
 def get_app() -> BaseCLIApp:
     return DiffApp()

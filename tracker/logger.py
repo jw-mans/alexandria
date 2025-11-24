@@ -14,7 +14,7 @@ def create_run(experiment_name,
     run_data = {
         "id": run_id,
         "experiment_name": experiment_name,
-        "timestamp_start": datetime.now(),
+        "timestamp_start": datetime.now().isoformat(),
         "timestamp_end": None,
         "parameters": parameters or {},
         "metrics": metrics or {},

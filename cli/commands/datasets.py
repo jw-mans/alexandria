@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Optional
-from ..base import BaseCLIApp, console
 from rich.table import Table
 import typer
 
+from ..base import BaseCLIApp, console
 
 class DatasetsApp(BaseCLIApp):
     def __init__(self):
@@ -37,8 +37,5 @@ class DatasetsApp(BaseCLIApp):
 
             console.print(table)
 
-
 def get_app() -> BaseCLIApp:
     return DatasetsApp()
-
-
