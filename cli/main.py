@@ -9,7 +9,6 @@ from . import (
 
 app = typer.Typer(help="Alexandria CLI")
 
-# Register sub-commands: get_app() returns BaseCLIApp instance
 app.add_typer(log_app().get_app(), name="log")
 app.add_typer(show_app().get_app(), name="show")
 app.add_typer(diff_app().get_app(), name="diff")

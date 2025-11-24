@@ -47,6 +47,6 @@ class RunSchema(BaseModel):
     environment: Optional[Dict[str, Any]] = None
     artifacts: Optional[Dict[str, Dict[str, Any]]] = Field(default_factory=dict)
 
-    # Do we need this ORM config?
+    # TODO : do we need this ORM config?
     # class Config:
     #     from_attributes = True

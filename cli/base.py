@@ -20,7 +20,6 @@ class BaseCLIApp:
 
 
     def get_app(self) -> typer.Typer:
-        # ensure commands registered lazily
         return self.app
 
 

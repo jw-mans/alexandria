@@ -8,7 +8,7 @@ BACKEND_URL = 'http://127.0.0.1:8000'
 
 def send_run(run_data: dict):
     run_obj = RunSchema(**run_data)
-    run_json = run_obj.model_dump(mode="json") # .dict() in pydantic v1
+    run_json = run_obj.model_dump(mode="json")
 
     response = requests.post(
         f"{BACKEND_URL}/runs",
