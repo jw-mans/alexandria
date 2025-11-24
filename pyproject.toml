@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alexandria"
+version = "0.1.0"
+description = "ML Run Tracking Tool"
+authors = [{name="Daniel Jermakiw", email="daniiljermakiw@gmail.com"}]
+readme = "README.md"
+license = {file="LICENSE"}
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi==0.121.2",
+    "uvicorn[standard]==0.38.0",
+    "sqlalchemy==2.0.44",
+    "pydantic==2.12.4",
+    "httpx==0.28.1",
+    "typer[all]==0.20.0",
+    "rich>=14.2.0",
+    "pandas>=2.3.3",
+    "numpy>=2.2.6",
+    "datasets>=4.4.1"
+]
+
+[project.scripts]
+alexandria = "cli.main:main"

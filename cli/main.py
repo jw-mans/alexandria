@@ -1,5 +1,5 @@
 import typer
-from . import (
+from .utils import (
     artifacts_app,
     datasets_app,
     diff_app,
