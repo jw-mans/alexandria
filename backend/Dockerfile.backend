@@ -1,2 +1,0 @@
-FROM . AS stage
-# TODO: Just make!

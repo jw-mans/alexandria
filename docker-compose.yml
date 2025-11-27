@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: alex_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./database/lineage.db
+    volumes:
+      - ./backend/database:/app/database
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+    #   interval: 5s
+    #   timeout: 2s
+    #   retries: 5
+    #   start_period: 5s
+
+  cli:
+    build:
+      context: .
+      dockerfile: cli/Dockerfile
+    container_name: alex_cli
+    # depends_on:
+    #   backend:
+    #     condition: service_healthy
+    environment:
+      - TRAINLOG_BACKEND=http://backend:8000
+    volumes:
+      - ./tracker:/app/tracker
+    entrypoint: ["tail", "-f", "/dev/null"]
