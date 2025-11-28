@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   backend:
     build:
@@ -22,11 +24,12 @@ services:
       context: .
       dockerfile: cli/Dockerfile
     container_name: alex_cli
-    # depends_on:
-    #   backend:
-    #     condition: service_healthy
     environment:
       - TRAINLOG_BACKEND=http://backend:8000
     volumes:
       - ./tracker:/app/tracker
-    entrypoint: ["tail", "-f", "/dev/null"]
+    tty: true
+    stdin_open: true
+    # depends_on:
+    #   backend:
+    #     condition: service_healthy

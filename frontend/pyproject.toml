@@ -1,0 +1,16 @@
+[build-system]
+requires = ['setuptools>=61.0', 'wheel']
+build-backend = "setuptools.build_meta"
+
+[project]
+name = 'alexandria-frontend'
+version = '0.1.0'
+description = 'Alexandria ML visualizer'
+requires-python = ">=3.10"
+
+dependencies = [
+    'textual==6.6.0',
+    'rich==14.2.0',
+    'httpx==0.28.1',
+    'pydantic==2.12.4'
+]

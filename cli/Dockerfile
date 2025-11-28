@@ -9,6 +9,7 @@ COPY cli/pyproject.toml /app/
 RUN pip install --upgrade pip \
     && pip install poetry \
     && poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-root
+    && poetry install --no-interaction --no-root 
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+WORKDIR /app/cli
+CMD ["tail", "-f", "/dev/null"]

@@ -10,3 +10,4 @@ datasets
 httpx
 typer[all]
 rich
+textual
