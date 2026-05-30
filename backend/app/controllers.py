@@ -1,12 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from . import repository, schemas, models
-from .database import get_db
-
-router = APIRouter()
-
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
 from . import repository, schemas
 from .database import get_db
 
@@ -57,7 +50,5 @@ def list_datasets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
         ds_hash = ds.get('hash')
         if ds_hash and ds_hash not in seen:
             seen.add(ds_hash)
-            datasets.append(ds)
-        elif not ds_hash:
             datasets.append(ds)
     return datasets

@@ -1,10 +1,12 @@
 import pandas as pd
 import hashlib
 from typing import Union, Dict
-from datasets import Dataset
 
-try: from datasets import Dataset as HFDataset
-except Exception: HFDataset = None
+try:
+    from datasets import Dataset as HFDataset
+except ImportError:
+    HFDataset = None
+
 
 def __hash_file_(path: str) -> str:
     h = hashlib.sha256()
@@ -13,19 +15,21 @@ def __hash_file_(path: str) -> str:
             h.update(chunk)
     return h.hexdigest()
 
+
 def __hash_dataframe_(df: pd.DataFrame) -> str:
     # deterministic: to bytes via to_numpy + dtypes
     h = hashlib.sha256()
     h.update(pd.util.hash_pandas_object(df, index=True).values.tobytes())
     return h.hexdigest()
 
+
 def profile_dataset_auto(
-        data: Union[str, pd.DataFrame, Dataset]
+        data: Union[str, pd.DataFrame]
 ) -> Dict:
     """
     Dataset autodetection: CSV file, pandas.DataFrame, HuggingFace Dataset
     """
-    
+
     if isinstance(data, str):
         df = pd.read_csv(data)
         path = data
@@ -39,7 +43,7 @@ def profile_dataset_auto(
         path = 'hd_dataset'
         hash_val = __hash_dataframe_(df)
     else:
-        # TODO : something else? to search! 
+        # TODO : something else? to search!
         # TODO : make support of custom dataset
         raise ValueError('Unsupported dataset type')
 

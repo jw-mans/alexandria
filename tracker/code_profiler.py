@@ -16,7 +16,9 @@ def get_tracked_files(file_paths: List[str]) -> List[Dict]:
         "hash": hash_file(f)
     } for f in file_paths]
 
-def get_all_python_files(root_dir: str, exclude: set = set()) -> List[str]:
+def get_all_python_files(root_dir: str, exclude: set = None) -> List[str]:
+    if exclude is None:
+        exclude = set()
     files = []
     for dirpath, _, filenames in os.walk(root_dir):
         if any(excl in dirpath for excl in exclude):

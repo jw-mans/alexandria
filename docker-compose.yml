@@ -12,12 +12,18 @@ services:
       - DATABASE_URL=sqlite:///./database/lineage.db
     volumes:
       - ./backend/database:/app/database
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-    #   interval: 5s
-    #   timeout: 2s
-    #   retries: 5
-    #   start_period: 5s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: alex_frontend
+    ports:
+      - "8001:8001"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
 
   cli:
     build:
@@ -26,10 +32,8 @@ services:
     container_name: alex_cli
     environment:
       - TRAINLOG_BACKEND=http://backend:8000
+      - ALEXANDRIA_BACKEND_URL=http://backend:8000
     volumes:
       - ./tracker:/app/tracker
     tty: true
     stdin_open: true
-    # depends_on:
-    #   backend:
-    #     condition: service_healthy

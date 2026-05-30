@@ -6,7 +6,11 @@ def get_environment():
     python_version = sys.version.split()[0]
     os_name = platform.system()
     try:
-        pip_freeze = subprocess.getoutput("pip freeze").splitlines()
+        result = subprocess.run(
+            ["pip", "freeze"],
+            capture_output=True, text=True, check=True
+        )
+        pip_freeze = result.stdout.splitlines()
     except Exception:
         pip_freeze = []
     return {

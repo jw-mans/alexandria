@@ -1,11 +1,11 @@
-import json
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from typing import Dict, Any
 
 from . import models, schemas
 
-class __Diffs:
+
+class _Diffs:
 
     @staticmethod
     def _diff_params(params1: dict, params2: dict):
@@ -68,14 +68,16 @@ def diff_runs(db: Session, run1: models.Run, run2: models.Run):
     r1 = serialize_run(run1)
     r2 = serialize_run(run2)
 
+    commit_diff, code_diff = _Diffs._diff_code(r1.get('code') or {}, r2.get('code') or {})
+
     diff = {
-        "parameters_changed": __Diffs._diff_params(r1['parameters'], r2['parameters']),
-        "metrics_changed": __Diffs._diff_metrics(r1['metrics'], r2['metrics']),
-        "dataset_changed": __Diffs._diff_datasets(r1.get('dataset') or {}, r2.get('dataset') or {}),
-        "git_commit": __Diffs._diff_code(r1.get('code') or {}, r2.get('code') or {})[0],
-        "code_changed": __Diffs._diff_code(r1.get('code') or {}, r2.get('code') or {})[1],
-        "artifacts_changed": __Diffs._diff_artifacts(r1.get('artifacts') or {}, r2.get('artifacts') or {}),
-        "environment": __Diffs._diff_env(r1.get('environment') or {}, r2.get('environment') or {}),
+        "parameters_changed": _Diffs._diff_params(r1['parameters'], r2['parameters']),
+        "metrics_changed": _Diffs._diff_metrics(r1['metrics'], r2['metrics']),
+        "dataset_changed": _Diffs._diff_datasets(r1.get('dataset') or {}, r2.get('dataset') or {}),
+        "git_commit": commit_diff,
+        "code_changed": code_diff,
+        "artifacts_changed": _Diffs._diff_artifacts(r1.get('artifacts') or {}, r2.get('artifacts') or {}),
+        "environment": _Diffs._diff_env(r1.get('environment') or {}, r2.get('environment') or {}),
     }
     return diff
 
@@ -91,7 +93,7 @@ def serialize_run(db_run):
         "timestamp_start": db_run.timestamp_start.isoformat() if db_run.timestamp_start else None,
         "timestamp_end": db_run.timestamp_end.isoformat() if db_run.timestamp_end else None,
         "tags": db_run.tags or [],
-        "parameters": dict(db_run.parameters) if db_run.parameters else {},
+        "parameters": {p.key: p.value for p in db_run.parameters} if db_run.parameters else {},
         "metrics": {
             key: [
                 m.value for m in db_run.metrics if m.key == key
@@ -127,27 +129,20 @@ def serialize_run(db_run):
     }
 
 
-def _serialize_metrics(metrics):
-    out = {}
-    for m in metrics:
-        out.setdefault(m.key, []).append(m.value)
-    return out
-
-
 def create_run(db: Session, run_data: Dict[str, Any]):
-    params = [models.Parameter(key=k, value=str(v)) for k, v in run_data.get('parameters', {}).items()]
-
-    metrics = []
-    for key, values in run_data.get('metrics', {}).items():
-        for step, value in enumerate(values):
-            metrics.append(models.Metric(key=key, value=value, step=step))
-
-    dataset = models.Dataset(**run_data['dataset']) if run_data.get('dataset') else None
-    code = models.Code(**run_data['code']) if run_data.get('code') else None
-    environment = models.Environment(**run_data['environment']) if run_data.get('environment') else None
-    artifacts = [models.Artifact(name=name, **info) for name, info in run_data.get('artifacts', {}).items()]
-
     try:
+        params = [models.Parameter(key=k, value=str(v)) for k, v in run_data.get('parameters', {}).items()]
+
+        metrics = []
+        for key, values in run_data.get('metrics', {}).items():
+            for step, value in enumerate(values):
+                metrics.append(models.Metric(key=key, value=value, step=step))
+
+        dataset = models.Dataset(**run_data['dataset']) if run_data.get('dataset') else None
+        code = models.Code(**run_data['code']) if run_data.get('code') else None
+        environment = models.Environment(**run_data['environment']) if run_data.get('environment') else None
+        artifacts = [models.Artifact(name=name, **info) for name, info in run_data.get('artifacts', {}).items()]
+
         db_run = models.Run(
             id=run_data['id'],
             experiment_name=run_data["experiment_name"],
@@ -163,7 +158,7 @@ def create_run(db: Session, run_data: Dict[str, Any]):
         db.commit()
         db.refresh(db_run)
         return db_run
-    except SQLAlchemyError as ex:
+    except SQLAlchemyError:
         db.rollback()
         raise
 
